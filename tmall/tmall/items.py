@@ -11,4 +11,6 @@ import scrapy
 class TmallItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    url = scrapy.Field()
+    comments = scrapy.Field()
     pass

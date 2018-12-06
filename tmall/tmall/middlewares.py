@@ -5,8 +5,9 @@
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import browsercookie
 from scrapy import signals
-
+from scrapy.downloadermiddlewares.cookies import CookiesMiddleware
 
 class TmallSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -101,3 +102,15 @@ class TmallDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+class TmallBrowserCookiesMiddleware(CookiesMiddleware):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self.load_browser_cookies()
+    
+    def load_browser_cookies(self):
+        # load the cookie of the chrome webbrowser
+        jar = self.jars['chrome']
+        chrome_cookiejar = browsercookie.chrome()
+        for cookie in chrome_cookiejar:
+            jar.set_cookie(cookie)

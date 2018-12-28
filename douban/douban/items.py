@@ -15,3 +15,5 @@ class DoubanItem(scrapy.Item):
 
 class MovieDetailItem(scrapy.Item):
     name = scrapy.Field()
+    url = scrapy.Field()
+    director = scrapy.Field()

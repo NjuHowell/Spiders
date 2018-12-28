@@ -19,7 +19,10 @@ class MovieDetailSpider(scrapy.Spider):
     
     def parse(self, response):
         md_item = MovieDetailItem()
+        url = response.url
         name = response.xpath("//div[@id='content']/h1/span[1]/text()").extract_first()
+        movie_info = response.xpath("//div[@id='info']")
+        md_item['url'] = url
         md_item['name'] = name
         yield md_item
 

@@ -22,12 +22,23 @@ class jd_ebook_bestseller(scrapy.Spider):
             yield scrapy.Request(url=start_url, callback=self.parse)
 
     def parse(self, response):
-        for url in response.xpath("//div[@class='mcc']/div[@class='item']/dl/dt[@class='p-name']/a/@href").extract():
+        for div in response.xpath("//div[@class='mcc']/div[@class='item']"):
+            item = JdEbookBestsellerItem()
+            url = div.xpath("dl/dt[@class='p-name']/a/@href").extract_first()
             item_url = 'http:' + url
-            yield scrapy.Request(url=item_url, callback=self.parse_detail)
+            rank = div.xpath("span[@class='index']/text()").extract_first()
+            item['url'] = item_url
+            item['rank'] = rank
+            detail_request = scrapy.Request(url=item_url, callback=self.parse_detail)
+            detail_request.meta['item'] = item
+            yield detail_request
+        # for url in response.xpath("//div[@class='mcc']/div[@class='item']/dl/dt[@class='p-name']/a/@href").extract():
+        #     # item = JdEbookBestsellerItem()
+        #     item_url = 'http:' + url
+        #     yield scrapy.Request(url=item_url, callback=self.parse_detail)
 
     def parse_detail(self, response):
-        item =JdEbookBestsellerItem()
+        item = response.meta['item']
         name = json.dumps(response.xpath("//div[@class='sku-name']/text()").extract_first())
         author = json.dumps(response.xpath("//div[@class='author']/a/text()").extract_first())
         bookinfo = dict()
@@ -36,13 +47,13 @@ class jd_ebook_bestseller(scrapy.Spider):
             value = info_item.xpath('div[2]/text()').extract_first()
             if isinstance(key, str):
                 bookinfo[key] = json.dumps(value)
-        category = json.dumps(response.xpath("//div[@class='category li']/div[@class='dd']/a/text()").extract_first())
+        category = json.dumps(response.xpath("//div[@class='category li']/div[@class='dd']/a/text()").extract())
         # 获取商品id
         item_id = re.findall(
             pattern=r'[0-9]+', 
             string=urlparse(response.url).path
         )[0]
-        item['url'] = response.url
+        # item['url'] = response.url
         item['item_id'] = item_id
         item['name'] = name
         item['author'] = author
@@ -103,8 +114,3 @@ class jd_ebook_bestseller(scrapy.Spider):
         item['PoorCount'] = PoorCount
         item['VideoCount'] = VideoCount
         yield item 
-
-# # 京东获取评论详情的url
-# comment_url = 'https://club.jd.com/comment/productCommentSummaries.action?referenceIds=30383844'
-# # 京东商品价格url
-# price_url = 'https://p.3.cn/prices/mgets?skuids=J_30383844'

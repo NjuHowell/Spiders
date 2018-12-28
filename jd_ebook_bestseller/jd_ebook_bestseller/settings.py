@@ -91,7 +91,7 @@ ITEM_PIPELINES = {
 
 # 指定输出顺序
 FEED_EXPORT_FIELDS = [
-    'url', 'item_id', 'name', 'author', 'bookinfo', 'category', 
+    'url', 'item_id', 'name', 'rank', 'author', 'bookinfo', 'category', 
     'original_price', 'price', 'paper_price', 'CommentCount', 
     'AverageScore', 'GoodCount', 'PoorCount', 'VideoCount'
     ]

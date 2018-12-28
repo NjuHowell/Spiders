@@ -11,6 +11,7 @@ import scrapy
 class JdEbookBestsellerItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    rank = scrapy.Field()
     url = scrapy.Field()
     item_id = scrapy.Field()
     name = scrapy.Field()
